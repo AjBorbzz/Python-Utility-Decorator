@@ -4,7 +4,12 @@ import logging
 from threading import Lock
 from typing import get_type_hints
 
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 class DecoratorUtility:
+
+
     @staticmethod
     def timer(func):
         """Measure the execution time of a function."""
@@ -82,3 +87,25 @@ class DecoratorUtility:
                 
             return func(*args, **kwargs)
         return wrapper_validate_arguments
+
+
+    @staticmethod
+    def format_output_for_logging(report_format):
+        def decorator_format_output(func):
+            @functools.wraps(func)
+            def wrapper_format_output(*args, **kwargs):
+                result = func(*args, **kwargs)
+                args_str = ', '.join(map(str, args))
+                kwargs_str = ', '.join(f"{k}={v}" for k,v in kwargs.items())
+                all_args_str = ', '.join(filter(None, [args_str, kwargs_str]))
+                log_message = report_format.format(
+                    func_name=func.__name__,
+                    result=result,
+                    args=all_args_str
+                )
+
+                logging.info(log_message)
+
+                return result
+            return wrapper_format_output
+        return decorator_format_output
