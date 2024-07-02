@@ -2,6 +2,7 @@ import time
 import functools
 import logging
 from threading import Lock
+from typing import get_type_hints
 
 class DecoratorUtility:
     @staticmethod
@@ -65,3 +66,19 @@ class DecoratorUtility:
                 cache[key] = func(*args, **kwargs)
             return cache[key]
         return wrapper_cache
+    
+    @staticmethod
+    def validate_arguments(func):
+        @functools.wraps(func)
+        def wrapper_validate_arguments(*args, **kwargs):
+            type_hints = get_type_hints(func)
+            for arg, hint in zip(args, type_hints.values()):
+                if not isinstance(arg, hint):
+                    raise TypeError(f"Argument {arg} is not of type {hint}")
+                
+            for kwarg, value in kwargs.items():
+                if kwarg in type_hints and not isinstance(value, type_hints[kwarg]):
+                    raise TypeError(f"Argument {kwarg}={value} is not of type {type_hints[kwarg]}")
+                
+            return func(*args, **kwargs)
+        return wrapper_validate_arguments

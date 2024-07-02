@@ -18,8 +18,16 @@ def some_computation(*args):
     print(f"computing with args: {args}")
     return sum(args)
 
+
+@DecoratorUtility.validate_arguments
+def process_data(name: str, age: int, height: float):
+    print(f"Name: {name}, Age: {age}, Height: {height}")
+
+
 # Tests
 # run_timer_decorator(100)
 # print(make_greeting('AJ', age=37))
-print(some_computation(1,2,3,4,5,6,7,8))
-print(some_computation(1,2,3,4,5,6,7,8,9)) # This will use the cached result
+# print(some_computation(1,2,3,4,5,6,7,8))
+# print(some_computation(1,2,3,4,5,6,7,8,9)) # This will use the cached result
+# process_data("Aj", 37, 5.5)
+process_data("Bob", "Thirty Eight", 6.2)
