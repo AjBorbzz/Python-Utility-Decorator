@@ -1,4 +1,5 @@
 from DecoratorUtility import DecoratorUtility
+import logging
 
 @DecoratorUtility.timer
 def run_timer_decorator(run_times):
@@ -30,6 +31,24 @@ def calculate_sum(*numbers):
     return sum(numbers)
 
 
+@DecoratorUtility.retry(exceptions=(ValueError, KeyError),
+                        max_attempts=5,
+                        delay=2,
+                        logger=logging.getLogger(__name__))
+def test_retry_func(param):
+    if param == 1:
+        raise ValueError("Invavlid Value")
+    elif param ==2:
+        raise KeyError("Invalid Key")
+    return "Success"
+
+try:
+    result = test_retry_func(1)
+    print(result)
+except Exception as e:
+    print("Function failed after retries: {e}")
+
+
 # Tests
 # run_timer_decorator(100)
 # print(make_greeting('AJ', age=37))
@@ -37,4 +56,4 @@ def calculate_sum(*numbers):
 # print(some_computation(1,2,3,4,5,6,7,8,9)) # This will use the cached result
 # process_data("Aj", 37, 5.5)
 # process_data("Bob", "Thirty Eight", 6.2)
-calculate_sum(1,2,3,4,5,6,7,8)
+# calculate_sum(1,2,3,4,5,6,7,8)

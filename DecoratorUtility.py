@@ -109,3 +109,36 @@ class DecoratorUtility:
                 return result
             return wrapper_format_output
         return decorator_format_output
+
+
+    @staticmethod
+    def retry(exceptions, max_attempts=3, delay=1, backoff=2, logger=None):
+        def decorator_retry(func):
+            @functools.wraps(func)
+            def wrapper_retry(*args, **kwargs):
+                nonlocal delay
+                attempts = 0
+                while attempts < max_attempts:
+                    try:
+                        return func(*args, **kwargs)
+                    except Exception as e:
+                        attempts += 1
+                        if attempts < max_attempts:
+                            msg = f"retrying {func.__name__} in {delay} \
+                                   seconds ({attempts}/{max_attempts}), \
+                                    due to {e}."
+                            if logger:
+                                logger.warning(msg)
+                            else:
+                                print(msg)
+                            time.sleep(delay)
+                            delay *= backoff
+                        else:
+                            msg = f"Max retries reached for {func.__name__}. \
+                                 Function failed with {e}."
+                            if logger:
+                                logger.error(msg)
+                            raise
+            return wrapper_retry
+        return decorator_retry
+    
