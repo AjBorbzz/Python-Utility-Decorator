@@ -3,6 +3,9 @@ import functools
 import logging
 from threading import Lock
 from typing import get_type_hints
+import pstats
+import cProfile
+import io
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -141,4 +144,32 @@ class DecoratorUtility:
                             raise
             return wrapper_retry
         return decorator_retry
+    
+
+    @staticmethod
+    def profile(output_file=None, sort_by='cumulative', lines_to_print=None,
+                strip_drirs=False):
+        def decorator_profile(func):
+            @functools.wraps(func)
+            def wrapper_profile(*args, **kwargs):
+                profiler = cProfile.Profile()
+                try:
+                    profiler.enable()
+                    result = func(*args, **kwargs)
+                    profiler.disable()
+                    return result
+                finally:
+                    s = pstats.Stats(profiler).sort_stats(sort_by)
+                    if strip_drirs:
+                        s.strip_dirs()
+                    if output_file is not None:
+                        with open(output_file, 'w') as f:
+                            s.stream = f
+                            s.print_stats(lines_to_print)
+                    else:
+                        s.print_stats(lines_to_print)
+
+            return wrapper_profile
+        return decorator_profile
+    
     

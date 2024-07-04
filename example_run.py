@@ -49,6 +49,13 @@ except Exception as e:
     print("Function failed after retries: {e}")
 
 
+@DecoratorUtility.profile(output_file='profile_stats.txt', lines_to_print=10,
+                        strip_drirs=True)
+def function_to_profile():
+    # some process here
+    print("Hello")
+
+# function_to_profile()
 # Tests
 # run_timer_decorator(100)
 # print(make_greeting('AJ', age=37))
@@ -57,3 +64,4 @@ except Exception as e:
 # process_data("Aj", 37, 5.5)
 # process_data("Bob", "Thirty Eight", 6.2)
 # calculate_sum(1,2,3,4,5,6,7,8)
+
