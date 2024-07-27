@@ -172,4 +172,12 @@ class DecoratorUtility:
             return wrapper_profile
         return decorator_profile
     
-    
+    @staticmethod
+    def permission_checking(required_permission):
+        def decorator(func):
+            def wrapper(user, *args, **kwargs):
+                if required_permission not in user.permissions:
+                    raise PermissionError("Insufficient Permissions")
+                return func(user, *args, **kwargs)
+            return wrapper
+        return decorator
